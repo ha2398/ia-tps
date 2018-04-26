@@ -6,7 +6,9 @@ Autor: Hugo Araujo de Sousa (2013007463)
 tp1.py:
 '''
 
+from BestFirst import BestFirst
 from Map import Map
+
 import sys
 
 
@@ -29,8 +31,10 @@ def main():
 		print_usage()
 		return
 
-	a = Map(sys.argv[1])
-	print(a.grid)
+	problem_map = Map(sys.argv[1])
+
+	bf = BestFirst((32, 16), (52, 19), problem_map)
+	bf.start()
 
 
 main()

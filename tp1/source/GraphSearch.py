@@ -198,8 +198,8 @@ class GraphSearch():
 		current_cost = node.cost
 
 		for action in self.actions:
-			if self.is_action_allowed(action, state):
-				new_state = tuple(map(operator.add, current_state, 
+			if self.is_action_allowed(action, current_state):
+				new_state = tuple(map(lambda x, y: x + y, current_state, 
 					self.mov[action]))
 				new_node = Node(new_state, node, action, current_cost)
 
@@ -227,8 +227,19 @@ class GraphSearch():
 
 			next_node = self.get_next_node()
 
-			if next_node.equals(self.goal):
+			if next_node.state == self.goal:
 				return next_node.build_solution()
 
 			self.set_explored(next_node)
 			self.expand_node(next_node)
+
+	def manhattan_distance(state1, state2):
+		'''
+			Calculate manhattan distance between two states.
+
+			@state1: First state.
+			@state2: Second state.
+			@return: Manhattan distance between state1 and state2.
+		'''
+
+		return sum(tuple(map(lambda x, y: abs(x - y), state1, state2)))
