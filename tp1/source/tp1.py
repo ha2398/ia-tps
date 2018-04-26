@@ -9,12 +9,27 @@ tp1.py:
 from Map import Map
 import sys
 
+
+def print_usage():
+	'''
+		Print program usage.
+	'''
+
+	print('tp1.py <map_file>')
+	return
+
+
 def main():
 	'''
 		Main program.
 	'''
 
-	a = Map('../maps/map1.map')
+	# Check args
+	if len(sys.argv) != 2:
+		print_usage()
+		return
+
+	a = Map(sys.argv[1])
 	print(a.grid)
 
 
