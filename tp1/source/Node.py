@@ -27,7 +27,7 @@ class Node():
 
 		return
 
-	def equals(self, node):
+	def __eq__(self, node):
 		'''
 			Return True, iff, the two nodes have the same state.
 

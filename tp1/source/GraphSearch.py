@@ -8,6 +8,7 @@ GraphSearch.py: Graph search template code.
 
 
 import numpy as np
+import operator as op
 
 
 class GraphSearch():
@@ -41,6 +42,18 @@ class GraphSearch():
 			'ur': (-1, 1),
 			'dl': (1, -1),
 			'dr': (1, 1)
+		}
+
+		# Cost of each movement.
+		self.costs = {
+			'u': 1,
+			'd': 1,
+			'l': 1,
+			'r': 1,
+			'ul': 1.5,
+			'ur': 1.5,
+			'dl': 1.5,
+			'dr': 1.5
 		}
 
 		return
@@ -86,6 +99,16 @@ class GraphSearch():
 
 		return False
 
+	def is_in_frontier(self, node):
+		'''
+			Check if node is in frontier.
+
+			(to be implemented in child classes)
+		'''
+
+		return False
+
+
 	def get_next_node(self):
 		'''
 			Choose a leaf node and remove it from the frontier.
@@ -107,6 +130,63 @@ class GraphSearch():
 
 		return
 
+	def is_action_allowed(self, action, current):
+		'''
+			Check if an action is allowed.
+
+			@action: (string) Action to check.
+			@current: (int, int) Current position.
+			@return: True, iff, the action is allowed.
+		'''
+
+		height = self.problem_map.height
+		width = self.problem_map.width
+		x = current[0]
+		y = current[1]
+
+		if action == 'u': # Up
+			if x != 0:
+				return True
+		elif action == 'd': # Down
+			if x != (height - 1):
+				return True
+		elif action == 'l': # Left
+			if y != 0:
+				return True
+		elif action == 'r': # Right
+			if y != (width - 1):
+				return True
+		elif action == 'ul': # Up and left
+			if x != 0 and y != 0:
+				cell_up = self.problem_map[x - 1, y]
+				cell_left = self.problem_map[x, y - 1]
+
+				if cell_up != '@' and cell_left != '@':
+					return True
+		elif action == 'ur': # Up and Right
+			if x != 0 and y != (width - 1):
+				cell_up = self.problem_map[x - 1, y]
+				cell_right = self.problem_map[x, y + 1]
+
+				if cell_up != '@' and cell_right != '@':
+					return True
+		elif action == 'dl': # Down and left
+			if x != (height - 1) and y != 0:
+				cell_down = self.problem_map[x + 1, y]
+				cell_left = self.problem_map[x, y - 1]
+
+				if cell_down != '@' and cell_left != '@':
+					return True
+		elif action == 'dr': # Down and right
+			if x != (height - 1) and y != (width - 1):
+				cell_down = self.problem_map[x + 1, y]
+				cell_right = self.problem_map[x, y + 1]
+
+				if cell_down != '@' and cell_down != '@':
+					return True
+
+		return False
+
 	def expand_node(self, node):
 		'''
 			Expand the chosen node, adding the resulting nodes to the frontier.
@@ -114,7 +194,19 @@ class GraphSearch():
 			@node: Node to expand.
 		'''
 
-		# TODO
+		current_state = node.state
+		current_cost = node.cost
+
+		for action in self.actions:
+			if self.is_action_allowed(action, state):
+				new_state = tuple(map(operator.add, current_state, 
+					self.mov[action]))
+				new_node = Node(new_state, node, action, current_cost)
+
+				explored = self.explored[new_state]
+
+				if not self.is_in_frontier(new_node) and not explored:
+					self.add_to_frontier(new_node)
 
 		return
 
