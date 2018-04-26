@@ -7,8 +7,11 @@ GraphSearch.py: Graph search template code.
 '''
 
 
+from Node import Node
+
 import numpy as np
 import operator as op
+import sys
 
 
 class GraphSearch():
@@ -141,48 +144,50 @@ class GraphSearch():
 
 		height = self.problem_map.height
 		width = self.problem_map.width
-		x = current[0]
-		y = current[1]
+		grid = self.problem_map.grid
+		x, y = current
 
 		if action == 'u': # Up
-			if x != 0:
+			if x != 0 and grid[x - 1, y] != '@':
 				return True
 		elif action == 'd': # Down
-			if x != (height - 1):
+			if x != (height - 1) and grid[x + 1, y] != '@':
 				return True
 		elif action == 'l': # Left
-			if y != 0:
+			if y != 0 and grid[x, y - 1] != '@':
 				return True
 		elif action == 'r': # Right
-			if y != (width - 1):
+			if y != (width - 1) and grid[x, y + 1] != '@':
 				return True
 		elif action == 'ul': # Up and left
-			if x != 0 and y != 0:
-				cell_up = self.problem_map[x - 1, y]
-				cell_left = self.problem_map[x, y - 1]
+			if x != 0 and y != 0 and grid[x - 1, y - 1] != '@':
+				cell_up = grid[x - 1, y]
+				cell_left = grid[x, y - 1]
 
 				if cell_up != '@' and cell_left != '@':
 					return True
 		elif action == 'ur': # Up and Right
-			if x != 0 and y != (width - 1):
-				cell_up = self.problem_map[x - 1, y]
-				cell_right = self.problem_map[x, y + 1]
+			if x != 0 and y != (width - 1) and grid[x - 1, y + 1] != '@':
+				cell_up = grid[x - 1, y]
+				cell_right = grid[x, y + 1]
 
 				if cell_up != '@' and cell_right != '@':
 					return True
 		elif action == 'dl': # Down and left
-			if x != (height - 1) and y != 0:
-				cell_down = self.problem_map[x + 1, y]
-				cell_left = self.problem_map[x, y - 1]
+			if x != (height - 1) and y != 0 and grid[x + 1, y - 1] != '@':
+				cell_down = grid[x + 1, y]
+				cell_left = grid[x, y - 1]
 
 				if cell_down != '@' and cell_left != '@':
 					return True
 		elif action == 'dr': # Down and right
-			if x != (height - 1) and y != (width - 1):
-				cell_down = self.problem_map[x + 1, y]
-				cell_right = self.problem_map[x, y + 1]
+			if x != (height - 1) and y != (width - 1) and \
+				grid[x + 1, y + 1] != '@':
 
-				if cell_down != '@' and cell_down != '@':
+				cell_down = grid[x + 1, y]
+				cell_right = grid[x, y + 1]
+
+				if cell_down != '@' and cell_right != '@':
 					return True
 
 		return False
@@ -201,7 +206,8 @@ class GraphSearch():
 			if self.is_action_allowed(action, current_state):
 				new_state = tuple(map(lambda x, y: x + y, current_state, 
 					self.mov[action]))
-				new_node = Node(new_state, node, action, current_cost)
+				new_node = Node(new_state, node, action,
+					current_cost + self.costs[action])
 
 				explored = self.explored[new_state]
 
@@ -218,6 +224,13 @@ class GraphSearch():
 				of success. None otherwise.
 		'''
 
+		if  self.problem_map.grid[self.initial] == '@' or \
+			self.problem_map.grid[self.goal] == '@':
+			solution = [Node(self.initial, None, None, 0),
+				Node(self.goal, None, None, -1)]
+
+			return solution
+
 		self.init_explored()
 		self.init_frontier()
 
@@ -233,7 +246,9 @@ class GraphSearch():
 			self.set_explored(next_node)
 			self.expand_node(next_node)
 
-	def manhattan_distance(state1, state2):
+		return None
+
+	def manhattan_distance(self, state1, state2):
 		'''
 			Calculate manhattan distance between two states.
 
@@ -243,3 +258,48 @@ class GraphSearch():
 		'''
 
 		return sum(tuple(map(lambda x, y: abs(x - y), state1, state2)))
+
+	def print_solution(self, solution):
+		'''
+			Print the found solution.
+
+			@solution: List with solution nodes, from initial to goal.
+		'''
+
+		if solution is None:
+			return
+
+		print(solution[0])
+		print(solution[-1])
+		print()
+
+		for i in solution:
+			sys.stdout.write(str(i) + ' ')
+
+		return
+
+	def print_path(self, solution):
+		'''
+			Print solution path. Affects original grid.
+
+			@solution: List of nodes. Solution found.
+		'''
+
+		if solution is None:
+			return
+
+		output = open('path.map', 'w')
+
+		height = self.problem_map.height
+		width = self.problem_map.width
+
+		self.problem_map.grid[(solution[0].state)] = 'I'
+		self.problem_map.grid[(solution[-1].state)] = 'F'
+		for i in solution[1:-1]:
+			self.problem_map.grid[(i.state)] = 'X'
+
+		for i in self.problem_map.grid:
+			output.write(''.join(i) + '\n')
+
+		output.close()
+		return

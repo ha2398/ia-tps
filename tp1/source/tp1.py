@@ -12,15 +12,6 @@ from Map import Map
 import sys
 
 
-def print_usage():
-	'''
-		Print program usage.
-	'''
-
-	print('tp1.py <map_file>')
-	return
-
-
 def main():
 	'''
 		Main program.
@@ -28,13 +19,13 @@ def main():
 
 	# Check args
 	if len(sys.argv) != 2:
-		print_usage()
 		return
 
 	problem_map = Map(sys.argv[1])
-
-	bf = BestFirst((32, 16), (52, 19), problem_map)
-	bf.start()
+	bf = BestFirst((18, 90), (100, 100), problem_map)
+	solution = bf.start()
+	bf.print_path(solution)
+	bf.print_solution(solution)
 
 
 main()

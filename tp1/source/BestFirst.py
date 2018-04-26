@@ -45,14 +45,14 @@ class BestFirst(GraphSearch):
 		# Find position to insert Node, in order to keep frontier sorted by
 		# lowest to highest heuristic value.
 		i = 0
-		for i in self.frontier:
-			distance_node = manhattan_distance(node.state, goal)
-			distance_i = manhattan_distance(i.state, goal)
+		for i in range(len(self.frontier)):
+			distance_node = self.manhattan_distance(node.state, self.goal)
+			distance_i = self.manhattan_distance(self.frontier[i].state, self.goal)
 
-			if distance_node >= distance_i:
+			if distance_node < distance_i:
 				break
 
-		self.frontier.inser(node, i)
+		self.frontier.insert(i, node)
 		return
 
 	def is_frontier_empty(self):

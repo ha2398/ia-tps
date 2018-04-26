@@ -38,6 +38,17 @@ class Node():
 
 		return self.state == node.state
 
+	def __str__(self):
+		'''
+			Get string representation of node.
+
+			@return: String representation of Node.
+		'''
+
+		x, y = self.state
+		cost = self.cost
+		return str('<' + str(x) + ', ' + str(y) + ', ' + str(cost) + '>')
+
 	def build_solution(self):
 		'''
 			Build a solution to the problem considering self is a goal node.
