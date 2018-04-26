@@ -40,3 +40,5 @@ class Map():
 		self.grid.shape = (self.height, self.width)
 
 		map_file.close()
+
+		return
