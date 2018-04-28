@@ -227,7 +227,7 @@ class GraphSearch():
 		if  self.problem_map.grid[self.initial] == '@' or \
 			self.problem_map.grid[self.goal] == '@':
 			solution = [Node(self.initial, None, None, 0),
-				Node(self.goal, None, None, -1)]
+				Node(self.goal, None, None, float('inf'))]
 
 			return solution
 
