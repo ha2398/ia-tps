@@ -43,12 +43,14 @@ class UniformCost(GraphSearch):
 		# Find position to insert Node, in order to keep frontier sorted by
 		# lowest to highest path cost.
 		i = 0
-		for i in range(len(self.frontier)):
+		while i < len(self.frontier):
 			path_cost_node = node.cost
 			path_cost_i = self.frontier[i].cost
 
 			if path_cost_node < path_cost_i:
 				break
+			
+			i += 1
 
 		self.frontier.insert(i, node)
 		return

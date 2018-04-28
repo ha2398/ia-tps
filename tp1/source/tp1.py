@@ -23,7 +23,7 @@ def main():
 		return
 
 	problem_map = Map(sys.argv[1])
-	bf = BestFirst((32, 29), (135, 97), problem_map)
+	bf = UniformCost((190, 249), (175, 249), problem_map)
 	solution = bf.start()
 	bf.print_path(solution)
 	bf.print_solution(solution)
