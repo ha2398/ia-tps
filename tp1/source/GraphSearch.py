@@ -259,6 +259,18 @@ class GraphSearch():
 
 		return sum(tuple(map(lambda x, y: abs(x - y), state1, state2)))
 
+	def octile_distance(self, state1, state2):
+		'''
+			Calculate octile distance between two states.
+
+			@state1: First state.
+			@state2: Second state.
+			@return: Octile distance between state1 and state2.
+		'''
+
+		tuple_dxdy = tuple(map(lambda x, y: abs(x - y), state1, state2))
+		return max(tuple_dxdy) + 0.5 * min(tuple_dxdy)
+
 	def print_solution(self, solution):
 		'''
 			Print the found solution.
@@ -267,7 +279,8 @@ class GraphSearch():
 		'''
 
 		if solution is None:
-			return
+			print(self.Node(self.initial, None, None, 0))
+			print(self.Node(self.goal, None, None, float('inf')))
 
 		print(solution[0])
 		print(solution[-1])
