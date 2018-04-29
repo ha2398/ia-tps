@@ -62,8 +62,8 @@ class AStar(GraphSearch):
 		# Find position to insert Node, in order to keep frontier sorted by
 		# lowest to highest f(n) = g(n) + h(n).
 		i = 0
+		fn_node = node.cost + self.heuristic_value(node)
 		while i < len(self.frontier):
-			fn_node = node.cost + self.heuristic_value(node)
 			fn_i = self.frontier[i].cost + \
 				self.heuristic_value(self.frontier[i])
 
