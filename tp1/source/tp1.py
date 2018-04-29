@@ -57,7 +57,6 @@ def main():
 			return
 
 		heuristic = int(sys.argv[HEURISTIC_ARG])
-
 		search = AStar(initial_state, final_state, problem_map, heuristic)
 	else:
 		return
