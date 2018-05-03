@@ -8,6 +8,7 @@ AStar.py: A* graph search. Two available heuristics: Manhattan and Octile.
 
 
 from GraphSearch import GraphSearch
+from heapq import *
 from Node import Node
 
 
@@ -36,9 +37,9 @@ class AStar(GraphSearch):
 			@return: h(n), heuristic value.
 		'''
 
-		if self.heuristic == 1: # Mahattan
+		if self.heuristic == 'manhattan': # Mahattan
 			return self.manhattan_distance(node.state, self.goal)
-		elif self.heuristic == 2: # Octile
+		elif self.heuristic == 'octile': # Octile
 			return self.octile_distance(node.state, self.goal)
 		else:
 			return float('inf')
@@ -49,7 +50,9 @@ class AStar(GraphSearch):
 			problem.
 		'''
 
-		self.frontier = [Node(self.initial, None, None, 0)]
+		first_node = Node(self.initial, None, None, 0)
+		fn = self.heuristic_value(first_node)
+		self.frontier = [(fn, first_node)]
 		return
 
 	def add_to_frontier(self, node):
@@ -61,23 +64,24 @@ class AStar(GraphSearch):
 
 		if self.explored[node.state]:
 			return
+		elif self.is_in_frontier[node.state]:
+			# Find node
+			index = list(map(lambda x: x[1], self.frontier)).index(node)
 
-		if self.is_in_frontier(node):
+			old_node = self.frontier[index][1]
+			old_cost = old_node.cost
 
-		# Find position to insert Node, in order to keep frontier sorted by
-		# lowest to highest f(n) = g(n) + h(n).
-		i = 0
-		fn_node = node.cost + self.heuristic_value(node)
-		while i < len(self.frontier):
-			fn_i = self.frontier[i].cost + \
-				self.heuristic_value(self.frontier[i])
+			# Updates in case the new cost is smaller.
+			if node.cost < old_cost:
+				self.frontier.pop(index)
+				heapify(self.frontier)
+			else:
+				return
 
-			if fn_node < fn_i:
-				break
+		fn = node.cost + self.heuristic_value(node)
+		heappush(self.frontier, (fn, node))
+		self.is_in_frontier[node.state] = 1
 
-			i += 1
-
-		self.frontier.insert(i, node)
 		return
 
 	def is_frontier_empty(self):
@@ -96,4 +100,4 @@ class AStar(GraphSearch):
 			@node: Next node in frontier to explore.
 		'''
 
-		return self.frontier.pop(0)
+		return heappop(self.frontier)[1]

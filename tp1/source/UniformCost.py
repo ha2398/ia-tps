@@ -8,6 +8,7 @@ UniformCost.py: Uniform cost search.
 
 
 from GraphSearch import GraphSearch
+from heapq import *
 from Node import Node
 
 
@@ -30,7 +31,8 @@ class UniformCost(GraphSearch):
 			problem.
 		'''
 
-		self.frontier = [Node(self.initial, None, None, 0)]
+		first_node = Node(self.initial, None, None, 0)
+		self.frontier = [(0, first_node)]
 		return
 
 	def add_to_frontier(self, node):
@@ -40,19 +42,25 @@ class UniformCost(GraphSearch):
 			@node: Node to add.
 		'''
 
-		# Find position to insert Node, in order to keep frontier sorted by
-		# lowest to highest path cost.
-		i = 0
-		path_cost_node = node.cost
-		while i < len(self.frontier):
-			path_cost_i = self.frontier[i].cost
+		if self.explored[node.state]:
+			return
+		elif self.is_in_frontier[node.state]:
+			# Find node
+			index = list(map(lambda x: x[1], self.frontier)).index(node)
 
-			if path_cost_node < path_cost_i:
-				break
-			
-			i += 1
+			old_node = self.frontier[index][1]
+			old_cost = old_node.cost
 
-		self.frontier.insert(i, node)
+			# Updates in case the new cost is smaller.
+			if node.cost < old_cost:
+				self.frontier.pop(index)
+				heapify(self.frontier)
+			else:
+				return
+
+		heappush(self.frontier, (node.cost, node))
+		self.is_in_frontier[node.state] = 1
+
 		return
 
 	def is_frontier_empty(self):
@@ -71,4 +79,4 @@ class UniformCost(GraphSearch):
 			@node: Next node in frontier to explore.
 		'''
 
-		return self.frontier.pop(0)
+		return heappop(self.frontier)[1]

@@ -73,6 +73,7 @@ class GraphSearch():
 		self.explored = np.zeros(height * width, dtype=int)
 		self.is_in_frontier = np.zeros(height * width, dtype=int)
 		self.explored.shape = (height, width)
+		self.is_in_frontier.shape = (height, width)
 
 		return
 
@@ -103,15 +104,6 @@ class GraphSearch():
 		'''
 
 		return False
-
-	def is_in_frontier(self, node):
-		'''
-			Check if node is in frontier.
-
-			@return: True, iff, node is in frontier.
-		'''
-
-		return self.is_in_frontier[node.state]
 
 	def get_next_node(self):
 		'''
@@ -235,6 +227,11 @@ class GraphSearch():
 		while True:
 			if self.is_frontier_empty(): # Failure
 				return None
+
+			# print()
+
+			# for i in self.frontier:
+			# 	sys.stdout.write('(' + i[0].__str__() + ', ' + i[1].__str__() + ') ')
 
 			next_node = self.get_next_node()
 

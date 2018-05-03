@@ -33,7 +33,9 @@ class BestFirst(GraphSearch):
 			problem.
 		'''
 
-		self.frontier = [Node(self.initial, None, None, 0)]
+		first_node = Node(self.initial, None, None, 0)
+		distance = self.manhattan_distance(self.initial, self.goal)
+		self.frontier = [(distance, first_node)]
 		return
 
 	def add_to_frontier(self, node):
@@ -43,22 +45,13 @@ class BestFirst(GraphSearch):
 			@node: Node to add.
 		'''
 
-		if self.is_in_frontier(new_node) or self.explored[new_state]:
+		if self.is_in_frontier[node.state] or self.explored[node.state]:
 			return					
 
-		# Find position to insert Node, in order to keep frontier sorted by
-		# lowest to highest heuristic value.
-		i = 0
-		distance_node = self.manhattan_distance(node.state, self.goal)
-		while i < len(self.frontier):
-			distance_i = self.manhattan_distance(self.frontier[i].state,
-				self.goal)
+		distance = self.manhattan_distance(node.state, self.goal)
+		heappush(self.frontier, (distance, node))
+		self.is_in_frontier[node.state] = 1
 
-			if distance_node < distance_i:
-				break
-			i += 1
-
-		self.frontier.insert(i, node)
 		return
 
 	def is_frontier_empty(self):
@@ -77,4 +70,4 @@ class BestFirst(GraphSearch):
 			@node: Next node in frontier to explore.
 		'''
 
-		return self.frontier.pop(0)
+		return heappop(self.frontier)[1]
