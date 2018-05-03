@@ -64,15 +64,6 @@ class UniformCost(GraphSearch):
 
 		return len(self.frontier) == 0
 
-	def is_in_frontier(self, node):
-		'''
-			Check if node is in frontier.
-
-			@return: True, iff, node is in frontier.
-		'''
-
-		return node in self.frontier
-
 	def get_next_node(self):
 		'''
 			Choose a leaf node and remove it from the frontier.

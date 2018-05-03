@@ -30,6 +30,7 @@ class GraphSearch():
 		self.problem_map = problem_map
 		self.explored = None
 		self.frontier = None
+		self.is_in_frontier = None
 
 		# up, down, left, right, up and left, up and right, down and left,
 		# down and right.
@@ -70,6 +71,7 @@ class GraphSearch():
 		height = self.problem_map.height
 		width = self.problem_map.width
 		self.explored = np.zeros(height * width, dtype=int)
+		self.is_in_frontier = np.zeros(height * width, dtype=int)
 		self.explored.shape = (height, width)
 
 		return
@@ -106,11 +108,10 @@ class GraphSearch():
 		'''
 			Check if node is in frontier.
 
-			(to be implemented in child classes)
+			@return: True, iff, node is in frontier.
 		'''
 
-		return False
-
+		return self.is_in_frontier[node.state]
 
 	def get_next_node(self):
 		'''
