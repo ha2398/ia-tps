@@ -24,6 +24,7 @@ class Node():
 		self.parent = parent
 		self.action = action
 		self.cost = cost
+		self.depth = 0
 
 		return
 

@@ -228,11 +228,6 @@ class GraphSearch():
 			if self.is_frontier_empty(): # Failure
 				return None
 
-			# print()
-
-			# for i in self.frontier:
-			# 	sys.stdout.write('(' + i[0].__str__() + ', ' + i[1].__str__() + ') ')
-
 			next_node = self.get_next_node()
 
 			if next_node.state == self.goal:

@@ -50,7 +50,7 @@ def main():
 	elif search_type == 'uc': # Uniform cost
 		search = UniformCost(initial_state, final_state, problem_map)
 	elif search_type == 'ids': # Iterative deepening depth-first
-		pass
+		search = IDS(initial_state, final_state, problem_map)
 	elif search_type == 'astar': # A*
 		# Check args
 		if len(sys.argv) < HEURISTIC_ARG + 1:
