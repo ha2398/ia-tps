@@ -59,6 +59,11 @@ class AStar(GraphSearch):
 			@node: Node to add.
 		'''
 
+		if self.explored[node.state]:
+			return
+
+		if self.is_in_frontier(node):
+
 		# Find position to insert Node, in order to keep frontier sorted by
 		# lowest to highest f(n) = g(n) + h(n).
 		i = 0

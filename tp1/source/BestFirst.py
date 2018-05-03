@@ -42,6 +42,9 @@ class BestFirst(GraphSearch):
 			@node: Node to add.
 		'''
 
+		if self.is_in_frontier(new_node) or self.explored[new_state]:
+			return					
+
 		# Find position to insert Node, in order to keep frontier sorted by
 		# lowest to highest heuristic value.
 		i = 0

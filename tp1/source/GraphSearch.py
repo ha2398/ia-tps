@@ -206,13 +206,10 @@ class GraphSearch():
 			if self.is_action_allowed(action, current_state):
 				new_state = tuple(map(lambda x, y: x + y, current_state, 
 					self.mov[action]))
-				new_node = Node(new_state, node, action,
-					current_cost + self.costs[action])
+				new_cost = current_cost + self.costs[action]
+				new_node = Node(new_state, node, action, new_cost)
 
-				explored = self.explored[new_state]
-
-				if not self.is_in_frontier(new_node) and not explored:
-					self.add_to_frontier(new_node)
+				self.add_to_frontier(new_node)
 
 		return
 

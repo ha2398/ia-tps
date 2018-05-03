@@ -38,6 +38,18 @@ class Node():
 
 		return self.state == node.state
 
+	def __lt__(self, node):
+		'''
+			Return True, iff, the first node has a smaller cost than the second
+				one.
+
+			@node: Node to compare self with.
+			@return: True, if the first node has a smaller cost than the second
+				one.. False otherwise.
+		'''
+
+		return self.cost < node.cost
+
 	def __str__(self):
 		'''
 			Get string representation of node.
