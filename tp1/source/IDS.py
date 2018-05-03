@@ -41,14 +41,14 @@ class IDS(GraphSearch):
 			@node: Node to add.
 		'''
 
-		if node.parent is not None:
-			node.depth = node.parent.depth + 1
+		if node.cost > self.L:
+			return
 
-		if self.is_in_frontier[node.state] or self.explored[node.state]:
-			return					
-
-		self.frontier.append(node)
-		self.is_in_frontier[node.state] = 1
+		if 	self.explored[node.state] > node.cost or \
+				(self.explored[node.state] == 0 and
+				not self.is_in_frontier[node.state]):
+			self.frontier.append(node)
+			self.is_in_frontier[node.state] = 1
 
 		return
 
@@ -85,26 +85,29 @@ class IDS(GraphSearch):
 
 			return solution
 
-		L = 0
+		self.L = 0
 		while True:
-			print('Depth limit:', L)
+			print('Depth limit:', self.L)
 			self.init_explored()
 			self.init_frontier()
 
 			while True:
 				if self.is_frontier_empty(): # Failure
-					L += 1
+					self.L += .5
 					break
 
 				next_node = self.get_next_node()
 
-				if next_node.depth > L:
-					continue
-
 				if next_node.state == self.goal:
 					return next_node.build_solution()
 
-				self.set_explored(next_node)
+				old_cost = self.explored[next_node.state]
+				if old_cost == 0 and next_node.state != self.initial:
+						self.explored[next_node.state] = next_node.cost
+				else:
+					self.explored[next_node.state] = min(old_cost,
+						next_node.cost)
+
 				self.expand_node(next_node)
 
 		return None

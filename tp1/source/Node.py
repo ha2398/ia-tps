@@ -51,6 +51,9 @@ class Node():
 
 		return self.cost < node.cost
 
+	def __repr__(self):
+		return self.__str__()
+
 	def __str__(self):
 		'''
 			Get string representation of node.
