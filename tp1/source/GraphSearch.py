@@ -276,8 +276,13 @@ class GraphSearch():
 		print(solution[-1])
 		print()
 
-		for i in solution:
-			sys.stdout.write(str(i) + ' ')
+		solution_str = solution.__repr__()
+		# Format output
+		solution_str = solution_str.replace('[', '')
+		solution_str = solution_str.replace(']', '')
+		solution_str = solution_str.replace('>,', '>')
+
+		print(solution_str)
 
 		return
 
