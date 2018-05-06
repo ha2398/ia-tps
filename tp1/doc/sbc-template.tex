@@ -1,175 +1,172 @@
 \documentclass[12pt]{article}
 
 \usepackage{sbc-template}
-
 \usepackage{graphicx,url}
-
 \usepackage[brazil]{babel}   
-%\usepackage[latin1]{inputenc}  
-\usepackage[utf8]{inputenc}  
-% UTF-8 encoding is recommended by ShareLaTex
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
 
      
 \sloppy
 
-\title{Instructions for Authors of SBC Conferences\\ Papers and Abstracts}
+\title{Trabalho Prático I \\ Inteligência Artificial (DCC028)}
 
-\author{Luciana P. Nedel\inst{1}, Rafael H. Bordini\inst{2}, Flávio Rech
-  Wagner\inst{1}, Jomi F. Hübner\inst{3} }
+\author{Hugo Araujo de Sousa \\ (2013007463)}
 
 
-\address{Instituto de Informática -- Universidade Federal do Rio Grande do Sul
-  (UFRGS)\\
-  Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
-\nextinstitute
-  Department of Computer Science -- University of Durham\\
-  Durham, U.K.
-\nextinstitute
-  Departamento de Sistemas e Computação\\
-  Universidade Regional de Blumenal (FURB) -- Blumenau, SC -- Brazil
-  \email{\{nedel,flavio\}@inf.ufrgs.br, R.Bordini@durham.ac.uk,
-  jomi@inf.furb.br}
+\address{Departamento de Ciência da Computação \\
+	Instituto de Ciências Exatas \\
+	Universidade Federal de Minas Gerais
 }
 
 \begin{document} 
 
 \maketitle
 
-\begin{abstract}
-  This meta-paper describes the style to be used in articles and short papers
-  for SBC conferences. For papers in English, you should add just an abstract
-  while for the papers in Portuguese, we also ask for an abstract in
-  Portuguese (``resumo''). In both cases, abstracts should not have more than
-  10 lines and must be in the first page of the paper.
-\end{abstract}
-     
-\begin{resumo} 
-  Este meta-artigo descreve o estilo a ser usado na confecção de artigos e
-  resumos de artigos para publicação nos anais das conferências organizadas
-  pela SBC. É solicitada a escrita de resumo e abstract apenas para os artigos
-  escritos em português. Artigos em inglês deverão apresentar apenas abstract.
-  Nos dois casos, o autor deve tomar cuidado para que o resumo (e o abstract)
-  não ultrapassem 10 linhas cada, sendo que ambos devem estar na primeira
-  página do artigo.
-\end{resumo}
+\section{Introdução}
+
+Em Inteligência Artificial, um tipo particular de agente baseado em objetivo é o \textbf{agente de resolução de problemas} \cite{russell2016artificial}. Esses agentes possuem formulações bem definidas do problema a resolver e consideram como solução para esse problema uma sequência de ações a serem tomadas. Dados um estado inicial e um estado objetivo, esses agentes devem ser capazes de obter uma sequência de ações que os levem do inicial ao objetivo. Esse processo pode ser feito através de uma busca no espaço de estados.
+
+O processo fundamental da busca no espaço de estados é o de analisar o estado atual do agente, obter os estados que podem ser atingidos a partir do estado atual e escolher um deles para seguir, deixando outras opções para mais tarde, caso a opção atual não leve a uma solução. Um exemplo de problema de busca em espaço de estados é o problema de achar uma rota em um determinado ambiente, em que cada posição no ambiente define um estado no espaço. Essas posições podem estar bloqueadas ou livres, permitindo ou não que o agente se movimente por elas, o que torna necessário que o agente seja capaz de decidir qual o melhor caminho a seguir e o que fazer caso encontre posições bloqueadas nesse caminho.
+
+Nesse trabalho, serão implementados algoritmos de busca em espaço de estados, aplicados em um ambiente representado por um mapa de duas dimensões. Os algoritmos serão analisados e comparados, a fim de comparar os caminhos encontrados, o tempo de execução e o número de nodos expandidos no grafo de busca de cada mapa.
+
+\section{Implementação}
+
+Esta seção descreve como a foi feita a modelagem do problema de busca em espaço de estados e as escolhas de implementação realizadas.
+
+\subsection{Mapas}
+
+Cada mapa passado como entrada dos algoritmos é representado por uma matriz de caracteres. Caracteres ``.'' indicam posições no mapa livres para serem atravessadas pelo agente. Já caracteres ``@'' indicam posições bloqueadas. Os agentes podem se mover em oito direções dentro dos mapas: cima, baixo, direita, esquerda, todas com o custo de 1, e as quatro diagonais, com o custo 1,5. É importante ressaltar que movimentos que levem o agente para fora do mapa de entrada ou que o façam atravessar diagonais em cantos bloqueados não são permitidos, isto é, não é possível seguir um caminho pela diagonal superior direta, por exemplo, caso as posições acima ou à direita do agente estejam bloqueadas.
+
+\subsection{Busca em Grafos}
+
+Ao todo foram implementados 4 algoritmos de busca em espaço de estados, descritos em detalhe na Seção \ref{sec:alg}. Como todos os algoritmos usam o mesmo arcabouço estrutural, com pequenas modificações, a modelagem de dados levou isso em consideração. Dessa forma, implementando todos as estruturas e algoritmos utilizando a linguagem \textit{Python} 3.5, foi definida uma classe \textbf{GraphSearch}, responsável pela implementação da estrutura principal da busca em espaço de estados utilizando grafos. Para isso, também foi necessário implementar a classe \textbf{Node}, que representa um nodo no grafo de busca. Esse nodo guarda informações sobre a posição do mapa que representa, o custo do caminho até essa posição e o nodo anterior a ele no grafo.
+
+A busca em grafos implementada neste trabalho utiliza a versão completa de busca, isto é, o agente evita estados já visitados. Para isso, são mantidas duas listas em memória: a lista \textbf{aberto}, que representa os nodos já visitados, porém, ainda não expandidos, e a lista \textbf{fechado}, que indica quais nodos já foram visitados e expandidos.
+
+\subsection{Algoritmos de Busca} \label{sec:alg}
+
+Uma vez definida a estrutura principal dos algoritmos de busca, 4 algoritmos foram implementados. Eles são descritos a seguir.
+
+\begin{itemize}
+	\item \textbf{Busca de aprofundamento iterativo (IDS):} Um dos tipos mais simples de busca em grafos é a busca em profundidade. Com ela, o algoritmo sempre prossegue para o nível mais profundo do grafo (as folhas). À medida que os nodos nos níveis mais profundos são expandidos, a busca volta ao nodo mais profundo que ainda tem sucessores não explorados.
+
+	Um dos principais problema da busca em profundidade é que ela percorre os maiores caminhos da raiz do grafo até as folhas, quando a solução mais rasa (e de menor custo) pode não estar em um nível tão profundo do grafo de busca. A busca de aprofundamento iterativo resolve esse problema ao executar a busca de profundidade iterativamente, cada vez com um valor limite de profundidade. Essa busca foi implementada na classe \textbf{IDS}, utilizando uma pilha para implementar a lista ``aberto''.
+
+	\item \textbf{Busca de custo uniforme:} Esse tipo de busca expande sempre, dentre os nodos na lista ``aberto'', aquele com o menor custo de caminho \textbf{g(n)}. Para isso, a lista ``aberto'' é implementada como uma fila de prioridade ordenada por \textit{g}. Esse algoritmo está implementado na classe \textbf{UniformCost}.
+
+	\item \textbf{Busca gulosa (best first search):} Esse algoritmo tenta sempre expandir o nodo que está mais próximo do objetivo, pensando que isso levaria a uma solução mais rapidamente. Para isso, a busca avalia os nodos usando simplesmente uma função heurística \textbf{h(n)}, que serve para ordenar a lista ``aberto'' como uma fila de prioridades. Para este trabalho, a heurística desse tipo de busca foi a \textit{Manhattan}, que é calculada dessa forma:
+
+	\begin{align*}
+		dx = abs(node.x - goal.x) \\
+		dy = abs(node.y - goal.y) \\
+		h(n) = (dx + dy)
+	\end{align*}
+
+	O algoritmo de busca gulosa está implementado na classe \textbf{BestFirst}.
+
+	\item \textbf{Busca A*:} A busca A* tenta minimizar o custo total estimado da solução. Para isso, avalia não só uma função heurística \textbf{h(n)}, mas também o custo para atingir o nodo \textbf{g(n)} em uma função \textbf{f(n) = g(n) + h(n)}, que ordena a lista ``aberto'' como uma fila de prioridades. Para este trabalho, o algoritmo A* foi implementado com duas possíveis opções de função heurística: a distância \textit{Manhattan}, descrita acima, e a distância \textit{Octile}, que é calculada da seguinte forma:
+
+	\begin{align*}
+		dx = abs(node.x - goal.x) \\
+		dy = abs(node.y - goal.y) \\
+		h(n) = max(dx, dy) + 0.5 * min(dx, dy)
+	\end{align*}
+
+	O algoritmo de busca A* está implementado na classe \textbf{AStar}.
+
+\end{itemize}
+
+\subsection{Otimalidade da busca A*}
+
+A otimalidade do algoritmo A* é dependente de algumas características da heurística utilizada. Observemos as duas características a seguir.
+
+\begin{itemize}
+	\item \textbf{Heurística Admissível:} Uma heurística é admissível se nunca superestima o custo para atingir um nodo. Isto é, \textit{f(n)} nunca superestima o custo verdadeiro de uma solução ao longo do caminho atual através de \textit{n}.
+
+	\item \textbf{Heurística Consistente:} Uma heurística é consistente se, para todo nodo \textit{n} e todo sucessor \textit{n'} de \textit{n} gerado através de uma ação \textit{a}, o custo estimado para atingir o estado objetivo a partir de \textit{n} nunca é maior que o custo do passo até \textit{n'} mais o custo estimado de se atingir o objetivo a partir de \textit{n'}:
+
+	\begin{align*}
+		h(n) \leq c(n, a, n') + h(n')
+	\end{align*}
+
+\end{itemize}
+
+De acordo com \cite{russell2016artificial}, a versão de busca em árvore do algoritmo A* é ótima caso a heurística utilizada seja admissível. Já a sua versão de busca em grafo é ótima se a heurística utilizada é consistente. Temos ainda que toda heurística consistente é admissível.
+
+% Manhattan x Octile
+
+Para a distância \textit{Manhattan}, vemos que é fácil provar sua inconsistência, já que:
+
+\begin{itemize}
+	\item \textbf{Andando na horizontal ou vertical:} nesse caso, o custo da ação é 1 e o valor da heurística é reduzido ou aumentado em 1 unidade. Logo:
+
+	\begin{align*}
+		c(n, a, n') = 1 \\
+		h(n') = h(n) \pm 1 \\
+		\text{Assim:} \\
+		h(n) \leq 1 + (h(n) + 1) \Rightarrow h(n) \leq h(n) + 2 ~ \text{(Ok!)} \\
+		h(n) \leq 1 + (h(n) - 1) \Rightarrow h(n) \leq h(n) ~ \text{(Ok!)} 
+	\end{align*}
+
+	\item \textbf{Andando nas diagonais:} nesse caso, o custo da ação é 1.5 e o valor da heurística é alterado em $ \pm 2 $ ou $ 0 $. Logo:
+
+	\begin{align*}
+		c(n, a, n') = 1.5 \\
+		h(n') = h(n) \pm 2 ~ \text{ou} ~ h(n') = h(n) \\
+		\text{Assim:} \\
+		h(n) \leq 1.5 + h(n) ~ \text{(Ok!)} \\
+		h(n) \leq 1.5 + h(n) + 2 \Rightarrow h(n) \leq 3.5 + h(n) ~ \text{(Ok!)} \\
+		h(n) \leq 1.5 + h(n) - 2 \Rightarrow 0 \leq -0.5 ~ \text{Impossível!}
+	\end{align*}
+\end{itemize}
+
+Logo, o algoritmo A* não é ótimo quando utilizando a heurística de distância de \textit{Manhattan} em mapas 2D que permitem movimentos diagonais com custo 1.5.
+
+Analisemos agora a heurística de distância \textit{Octile}.
+
+\begin{itemize}
+	\item \textbf{Andando na horizontal ou vertical:} o custo da ação é 1 e o valor da heurística é alterado em $ \pm 0.5 $ ou $ \pm 1 $. Logo:
+
+	\begin{align*}
+		c(n, a, n') = 1 \\
+		h(n') = h(n) \pm 0.5 ~ \text{ou} ~ h(n') = h(n) \pm 1 \\
+		\text{Assim:} \\
+		h(n) \leq 1 + h(n) + 0.5 \Rightarrow h(n) \leq h(n) + 1.5 ~ \text{(Ok!)} \\
+		h(n) \leq 1 + h(n) - 0.5 \Rightarrow h(n) \leq h(n) + 0.5 ~ \text{(Ok!)} \\
+		h(n) \leq 1 + h(n) + 1 \Rightarrow h(n) \leq h(n) \leq h(n) + 2 ~ \text{(Ok!)} \\
+		h(n) \leq 1 + h(n) - 1 \Rightarrow h(n) \leq h(n) ~ \text{(Ok!)}
+	\end{align*}
+
+	\item \textbf{Andando nas diagonais:} o custo da ação é 1.5 e o valor heurística é alterado em $ \pm 1.5 $ ou $ \pm 0.5 $. Logo:
+
+	\begin{align*}
+		c(n, a, n') = 1.5 \\
+		h(n') = h(n) \pm 0.5 ~ \text{ou} ~ h(n') = h(n) \pm 1.5 \\
+		\text{Assim:} \\
+		h(n) \leq 1.5 + h(n) + 0.5 \Rightarrow h(n) \leq h(n) + 2 ~ \text{(Ok!)} \\
+		h(n) \leq 1.5 + h(n) - 0.5 \Rightarrow h(n) \leq h(n) + 1 ~ \text{(Ok!)} \\
+		h(n) \leq 1.5 + h(n) + 1.5 \Rightarrow h(n) \leq h(n) \leq h(n) + 3 ~ \text{(Ok!)} \\
+		h(n) \leq 1.5 + h(n) - 1.5 \Rightarrow h(n) \leq h(n) ~ \text{(Ok!)}
+	\end{align*}
+\end{itemize}
+
+Portanto, o algoritmo A* é ótimo quando utiliza a heurística de distância \textit{Octile} em mapas 2D que permitem movimentos diagonais com custo 1.5.
+
+\subsection{Entrada, saída e execução}
 
 
-\section{General Information}
 
-All full papers and posters (short papers) submitted to some SBC conference,
-including any supporting documents, should be written in English or in
-Portuguese. The format paper should be A4 with single column, 3.5 cm for upper
-margin, 2.5 cm for bottom margin and 3.0 cm for lateral margins, without
-headers or footers. The main font must be Times, 12 point nominal size, with 6
-points of space before each paragraph. Page numbers must be suppressed.
+\section{Experimentos}
 
-Full papers must respect the page limits defined by the conference.
-Conferences that publish just abstracts ask for \textbf{one}-page texts.
+% Discutir:
+%	Custo dos caminhos
+%	Tempo de execução
+%	Número de nós expandidos.
+%	Tabelas e gráficos
 
-\section{First Page} \label{sec:firstpage}
-
-The first page must display the paper title, the name and address of the
-authors, the abstract in English and ``resumo'' in Portuguese (``resumos'' are
-required only for papers written in Portuguese). The title must be centered
-over the whole page, in 16 point boldface font and with 12 points of space
-before itself. Author names must be centered in 12 point font, bold, all of
-them disposed in the same line, separated by commas and with 12 points of
-space after the title. Addresses must be centered in 12 point font, also with
-12 points of space after the authors' names. E-mail addresses should be
-written using font Courier New, 10 point nominal size, with 6 points of space
-before and 6 points of space after.
-
-The abstract and ``resumo'' (if is the case) must be in 12 point Times font,
-indented 0.8cm on both sides. The word \textbf{Abstract} and \textbf{Resumo},
-should be written in boldface and must precede the text.
-
-\section{CD-ROMs and Printed Proceedings}
-
-In some conferences, the papers are published on CD-ROM while only the
-abstract is published in the printed Proceedings. In this case, authors are
-invited to prepare two final versions of the paper. One, complete, to be
-published on the CD and the other, containing only the first page, with
-abstract and ``resumo'' (for papers in Portuguese).
-
-\section{Sections and Paragraphs}
-
-Section titles must be in boldface, 13pt, flush left. There should be an extra
-12 pt of space before each title. Section numbering is optional. The first
-paragraph of each section should not be indented, while the first lines of
-subsequent paragraphs should be indented by 1.27 cm.
-
-\subsection{Subsections}
-
-The subsection titles must be in boldface, 12pt, flush left.
-
-\section{Figures and Captions}\label{sec:figs}
-
-
-Figure and table captions should be centered if less than one line
-(Figure~\ref{fig:exampleFig1}), otherwise justified and indented by 0.8cm on
-both margins, as shown in Figure~\ref{fig:exampleFig2}. The caption font must
-be Helvetica, 10 point, boldface, with 6 points of space before and after each
-caption.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.5\textwidth]{fig1.jpg}
-\caption{A typical figure}
-\label{fig:exampleFig1}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.3\textwidth]{fig2.jpg}
-\caption{This figure is an example of a figure caption taking more than one
-  line and justified considering margins mentioned in Section~\ref{sec:figs}.}
-\label{fig:exampleFig2}
-\end{figure}
-
-In tables, try to avoid the use of colored or shaded backgrounds, and avoid
-thick, doubled, or unnecessary framing lines. When reporting empirical data,
-do not use more decimal digits than warranted by their precision and
-reproducibility. Table caption must be placed before the table (see Table 1)
-and the font used must also be Helvetica, 10 point, boldface, with 6 points of
-space before and after each caption.
-
-\begin{table}[ht]
-\centering
-\caption{Variables to be considered on the evaluation of interaction
-  techniques}
-\label{tab:exTable1}
-\smallskip
-\begin{tabular}{|l|c|c|}
-\hline
-& Value 1 & Value 2\\[0.5ex]
-\hline
-&&\\[-2ex]
-Case 1 & 1.0 $\pm$ 0.1 & 1.75$\times$10$^{-5}$ $\pm$ 5$\times$10$^{-7}$\\[0.5ex]
-\hline
-&&\\[-2ex]
-Case 2 & 0.003(1) & 100.0\\[0.5ex]
-\hline
-\end{tabular}
-\end{table}
-
-\section{Images}
-
-All images and illustrations should be in black-and-white, or gray tones,
-excepting for the papers that will be electronically available (on CD-ROMs,
-internet, etc.). The image resolution on paper should be about 600 dpi for
-black-and-white images, and 150-300 dpi for grayscale images.  Do not include
-images with excessive resolution, as they may take hours to print, without any
-visible difference in the result. 
-
-\section{References}
-
-Bibliographic references must be unambiguous and uniform.  We recommend giving
-the author names references in brackets, e.g. \cite{knuth:84},
-\cite{boulic:91}, and \cite{smith:99}.
-
-The references must be listed using 12 point font size, with 6 points of space
-before each reference. The first line of each reference should not be
-indented, while the subsequent should be indented by 0.5 cm.
+\section{Considerações Finais}
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
