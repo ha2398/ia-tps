@@ -10,8 +10,7 @@ GraphSearch.py: Graph search template code.
 from Node import Node
 
 import numpy as np
-import operator as op
-import sys
+import time
 
 
 class GraphSearch():
@@ -31,6 +30,8 @@ class GraphSearch():
 		self.explored = None
 		self.frontier = None
 		self.is_in_frontier = None
+		self.expanded = 0
+		self.runtime = 0
 
 		# up, down, left, right, up and left, up and right, down and left,
 		# down and right.
@@ -194,6 +195,7 @@ class GraphSearch():
 
 		current_state = node.state
 		current_cost = node.cost
+		self.expanded += 1
 
 		for action in self.actions:
 			if self.is_action_allowed(action, current_state):
@@ -214,11 +216,14 @@ class GraphSearch():
 				of success. None otherwise.
 		'''
 
+		self.runtime = time.process_time()
+
 		if  self.problem_map.grid[self.initial] == '@' or \
 			self.problem_map.grid[self.goal] == '@':
 			solution = [Node(self.initial, None, None, 0),
 				Node(self.goal, None, None, float('inf'))]
 
+			self.runtime = time.process_time() - self.runtime
 			return solution
 
 		self.init_explored()
@@ -226,16 +231,19 @@ class GraphSearch():
 
 		while True:
 			if self.is_frontier_empty(): # Failure
+				self.runtime = time.process_time() - self.runtime
 				return None
 
 			next_node = self.get_next_node()
 
 			if next_node.state == self.goal:
+				self.runtime = time.process_time() - self.runtime
 				return next_node.build_solution()
 
 			self.set_explored(next_node)
 			self.expand_node(next_node)
 
+		self.runtime = time.process_time() - self.runtime
 		return None
 
 	def manhattan_distance(self, state1, state2):

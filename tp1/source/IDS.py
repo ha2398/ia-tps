@@ -11,6 +11,9 @@ from GraphSearch import GraphSearch
 from Node import Node
 
 
+import time
+
+
 class IDS(GraphSearch):
 
 	def __init__(self, initial, goal, problem_map):
@@ -78,16 +81,18 @@ class IDS(GraphSearch):
 				of success. None otherwise.
 		'''
 
+		self.runtime = time.process_time()
+
 		if  self.problem_map.grid[self.initial] == '@' or \
 			self.problem_map.grid[self.goal] == '@':
 			solution = [Node(self.initial, None, None, 0),
 				Node(self.goal, None, None, float('inf'))]
 
+			self.runtime = time.process_time() - self.runtime
 			return solution
 
 		self.L = 0
 		while True:
-			print('Depth limit:', self.L)
 			self.init_explored()
 			self.init_frontier()
 
@@ -99,6 +104,7 @@ class IDS(GraphSearch):
 				next_node = self.get_next_node()
 
 				if next_node.state == self.goal:
+					self.runtime = time.process_time() - self.runtime
 					return next_node.build_solution()
 
 				old_cost = self.explored[next_node.state]
@@ -110,4 +116,5 @@ class IDS(GraphSearch):
 
 				self.expand_node(next_node)
 
+		self.runtime = time.process_time() - self.runtime
 		return None

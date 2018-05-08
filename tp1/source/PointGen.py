@@ -16,5 +16,3 @@ num_points = int(sys.argv[1])
 for i in range(num_points):
 	for j in range(4):
 		print(randint(0, 255), end=' ')
-
-	print()

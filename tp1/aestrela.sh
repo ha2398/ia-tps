@@ -10,4 +10,4 @@ FX=$4
 FY=$5
 HEURISTIC=$6
 
-python3 ./source/tp1.py $MAP $IX $IY $FX $FY astar $HEURISTIC
+python3 ./source/tp1.py $MAP $IX $IY $FX $FY astar -he $HEURISTIC

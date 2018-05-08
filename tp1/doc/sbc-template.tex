@@ -35,7 +35,7 @@ Nesse trabalho, serão implementados algoritmos de busca em espaço de estados, 
 
 Esta seção descreve como a foi feita a modelagem do problema de busca em espaço de estados e as escolhas de implementação realizadas.
 
-\subsection{Mapas}
+\subsection{Mapas} \label{sec:impmap}
 
 Cada mapa passado como entrada dos algoritmos é representado por uma matriz de caracteres. Caracteres ``.'' indicam posições no mapa livres para serem atravessadas pelo agente. Já caracteres ``@'' indicam posições bloqueadas. Os agentes podem se mover em oito direções dentro dos mapas: cima, baixo, direita, esquerda, todas com o custo de 1, e as quatro diagonais, com o custo 1,5. É importante ressaltar que movimentos que levem o agente para fora do mapa de entrada ou que o façam atravessar diagonais em cantos bloqueados não são permitidos, isto é, não é possível seguir um caminho pela diagonal superior direta, por exemplo, caso as posições acima ou à direita do agente estejam bloqueadas.
 
@@ -52,7 +52,7 @@ Uma vez definida a estrutura principal dos algoritmos de busca, 4 algoritmos for
 \begin{itemize}
 	\item \textbf{Busca de aprofundamento iterativo (IDS):} Um dos tipos mais simples de busca em grafos é a busca em profundidade. Com ela, o algoritmo sempre prossegue para o nível mais profundo do grafo (as folhas). À medida que os nodos nos níveis mais profundos são expandidos, a busca volta ao nodo mais profundo que ainda tem sucessores não explorados.
 
-	Um dos principais problema da busca em profundidade é que ela percorre os maiores caminhos da raiz do grafo até as folhas, quando a solução mais rasa (e de menor custo) pode não estar em um nível tão profundo do grafo de busca. A busca de aprofundamento iterativo resolve esse problema ao executar a busca de profundidade iterativamente, cada vez com um valor limite de profundidade. Essa busca foi implementada na classe \textbf{IDS}, utilizando uma pilha para implementar a lista ``aberto''.
+	Um dos principais problemas da busca em profundidade é que ela percorre os maiores caminhos da raiz do grafo até as folhas, quando a solução mais rasa (e de menor custo) pode não estar em um nível tão profundo do grafo de busca. A busca de aprofundamento iterativo resolve esse problema ao executar a busca de profundidade iterativamente, cada vez com um valor limite de profundidade. Essa busca foi implementada na classe \textbf{IDS}, utilizando uma pilha para implementar a lista ``aberto''. A fim de garantir que o algoritmo encontra sempre uma solução ótima ao encontrar uma solução, o conceito de profundidade foi implementado como custo, isto é, à medida que o algoritmo executa, ele não analisará nodos cujo custo atual seja maior do que o custo limite para a iteração atual.
 
 	\item \textbf{Busca de custo uniforme:} Esse tipo de busca expande sempre, dentre os nodos na lista ``aberto'', aquele com o menor custo de caminho \textbf{g(n)}. Para isso, a lista ``aberto'' é implementada como uma fila de prioridade ordenada por \textit{g}. Esse algoritmo está implementado na classe \textbf{UniformCost}.
 
@@ -78,7 +78,7 @@ Uma vez definida a estrutura principal dos algoritmos de busca, 4 algoritmos for
 
 \end{itemize}
 
-\subsection{Otimalidade da busca A*}
+\subsection{Otimalidade da busca A*} \label{sec:otima}
 
 A otimalidade do algoritmo A* é dependente de algumas características da heurística utilizada. Observemos as duas características a seguir.
 
@@ -156,17 +156,39 @@ Portanto, o algoritmo A* é ótimo quando utiliza a heurística de distância \t
 
 \subsection{Entrada, saída e execução}
 
+Os mapas de entrada dos algoritmos devem seguir um formato específico. A primeira linha deve conter o tipo do mapa, as segunda e terceira linhas devem conter a altura e a largura do mapa, respectivamente, e a quarta linha deve conter o nome do mapa. As demais linhas e colunas correspondem à representação do mundo em si (Seção \ref{sec:impmap}).
 
+Como saída, os algoritmos imprimem na saída padrão 4 linhas: a primeira indica o estado inicial; a segunda o estado objetivo; a terceira intencionalmente deixada em branco; e a quarta indica o caminho obtido como solução, começando pelo estado inicial e terminando no estado objetivo, sendo cada estado representado por uma tripla $<$valor\_x, valor\_y, custo$>$. Além disso, uma decisão de implementação que facilitou a visualização dos algoritmos de busca foi a impressão do caminho obtido em um arquivo \textbf{path.map}. Esse arquivo contém o mesmo mapa usado para a busca, entretanto, com três novos caracteres: \textbf{I}, indica a posição inicial do agente; \textbf{F}, indica a posição final do agente; e \textbf{X}, indica uma posição intermediária, pertencente ao caminho solução entre a posição inicial e final do agente.
+
+Para executar os algoritmos de busca, foram criados quatro \textit{scripts}, um para cada algoritmo implementado. São eles: \textbf{aestrela.sh} (A*), \textbf{bg.sh} (busca gulosa), \textbf{ids.sh} (busca de aprofundamento iterativo) e \textbf{ucs.sh} (busca de custo uniforme). Todos os \textit{scripts} recebem, nessa ordem, o nome do mapa a executar a busca, a coordenada \textit{x} do ponto inicial, a coordenada \textit{y} do ponto inicial, a coordenada \textit{x} do ponto final e a coordenada \textit{y} do ponto final. O \textit{script} \textbf{aestrela.sh} recebe, além dos parâmetros citados, um número que indica a heurística a ser utilizada, sendo $ 1 $ referente à heurística de distância \textit{Manhattan} e $ 2 $ referente à heurística de distância \textit{Octile}.
+
+\begin{figure}[htp!]
+	\begin{center}
+	  \includegraphics[scale=0.8]{exec.png}
+	\end{center}
+	\caption{Exemplo de execução do projeto utilizando o algoritmo A* e heurística \textit{Manhattan} no mapa \textbf{map1.map} com ponto inicial (130, 130) e objetivo (135, 135).}
+	\label{fig:exec}
+\end{figure}
+
+\begin{figure}[htp!]
+	\begin{center}
+	  \includegraphics[scale=0.8]{mapex.png}
+	\end{center}
+	\caption{Representação da solução da execução ilustrada na Figura \ref{fig:exec}.}
+	\label{fig:mapex}
+\end{figure}
 
 \section{Experimentos}
 
 % Discutir:
 %	Custo dos caminhos
 %	Tempo de execução
-%	Número de nós expandidos.
+%	Número de nós expandidos (total e por segundo)
 %	Tabelas e gráficos
 
 \section{Considerações Finais}
+
+O Trabalho Prático I da disciplina de Inteligência Artificial se mostrou extremamente útil para fixar os conceitos vistos em sala referentes a problemas de busca no espaço de estados. Com ele, foi possível comparar os algoritmos utilizados e entender melhor as vantagens e desvantagens de cada um deles. Além disso, também foi possível visualizar o modo como cada um procura por caminhos no espaço de estados. De maneira geral, as maiores dificuldades durante a implementação do projeto foram o estudo teórico sobre heurísticas e suas propriedades, além da otimalidade do algoritmo A* (Seção \ref{sec:otima}). A implementação do algoritmo IDS também se mostrou mais complicada do que a dos outros algoritmos, uma vez que maiores modificações precisaram ser feitas à estrutura da busca em grafos, usada como classe mãe dos algoritmos.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}

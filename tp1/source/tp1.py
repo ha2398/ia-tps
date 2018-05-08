@@ -12,24 +12,22 @@ from IDS import *
 from Map import *
 from UniformCost import *
 
-import sys
+import argparse
 
 
-# Arg indices.
-MAP_ARG = 1
+parser = argparse.ArgumentParser()
+parser.add_argument('map', type=str, help='Map to perform the search on.')
+parser.add_argument('ix', type=int, help='x coordinate of the initial state')
+parser.add_argument('iy', type=int, help='y coordinate of the initial state')
+parser.add_argument('fx', type=int, help='x coordinate of the goal state')
+parser.add_argument('fy', type=int, help='y coordinate of the goal state')
+parser.add_argument('search', type=str, help='Search type.')
+parser.add_argument('-he', dest='h_number', type=int,
+	help='Heuristic to use with A*.')
+parser.add_argument('-d', '--debug', action='store_true',
+	help='Debug mode. Prints extra information.')
 
-# Initial state
-IX_ARG = 2
-IY_ARG = 3
-
-# Final state
-FX_ARG = 4
-FY_ARG = 5
-
-# Search type
-SEARCH_ARG = 6
-
-HEURISTIC_ARG = 7
+args = parser.parse_args()
 
 HEURISTIC = {1: 'manhattan', 2: 'octile'}
 
@@ -38,14 +36,10 @@ def main():
 		Main program.
 	'''
 
-	# Check args
-	if len(sys.argv) < SEARCH_ARG + 1:
-		return
-
-	problem_map = Map(sys.argv[MAP_ARG])
-	initial_state = (int(sys.argv[IX_ARG]), int(sys.argv[IY_ARG]))
-	final_state = (int(sys.argv[FX_ARG]), int(sys.argv[FY_ARG]))
-	search_type = sys.argv[SEARCH_ARG]
+	problem_map = Map(args.map)
+	initial_state = (args.ix, args.iy)
+	final_state = (args.fx, args.fy)
+	search_type = args.search
 
 	if search_type == 'bf': # Best first
 		search = BestFirst(initial_state, final_state, problem_map)
@@ -54,18 +48,18 @@ def main():
 	elif search_type == 'ids': # Iterative deepening depth-first
 		search = IDS(initial_state, final_state, problem_map)
 	elif search_type == 'astar': # A*
-		# Check args
-		if len(sys.argv) < HEURISTIC_ARG + 1:
-			return
-
-		heuristic = HEURISTIC[int(sys.argv[HEURISTIC_ARG])]
+		heuristic = HEURISTIC[args.h_number]
 		search = AStar(initial_state, final_state, problem_map, heuristic)
 	else:
 		return
 
 	solution = search.start()
-	search.print_path(solution)
 	search.print_solution(solution)
+
+	if (args.debug):
+		search.print_path(solution)
+		print('Expanded nodes:', search.expanded)
+		print('Runtime:', search.runtime)
 
 
 main()
