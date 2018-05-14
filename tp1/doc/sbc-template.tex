@@ -180,15 +180,57 @@ Para executar os algoritmos de busca, foram criados quatro \textit{scripts}, um 
 
 \section{Experimentos}
 
-% Discutir:
-%	Custo dos caminhos
-%	Tempo de execução
-%	Número de nós expandidos (total e por segundo)
-%	Tabelas e gráficos
+Esta seção reúne alguns experimentos que foram executados de forma a compreender melhor o comportamento dos algoritmos de busca implementados. Os fatores de interesse escolhidos foram o tempo de execução de cada algoritmo, o custo dos caminhos gerados como solução e o número de nós expandidos por cada algoritmo.
+
+\subsection{Custo dos caminhos}
+
+Para estes experimentos, o algoritmo UCS foi tido como referência principal, uma vez que é um algoritmo ótimo e, dessa forma, o custo da solução encontrada por ele é sempre o menor possível. O algoritmo IDS também poderia ter sido usado como referência, entretanto, seu tempo de execução médio não se mostrou prático, como mostrado na Seção \ref{sec:exptime}.
+
+Para ilustrar o que já foi dito sobre a otimalidade de cada algoritmo, a Tabela \ref{tab:costs} mostra o custo final da solução encontrada pelos algoritmos para o mapa ``map1.map'' com estado inicial (0, 0) e objetivo (247, 245). Podemos notar que as observações sobre otimalidade do algoritmo A* feitas na Seção \ref{sec:otima} são vistas na Tabela.
+
+\begin{table}[htp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Algoritmo} & \textbf{Custo da Solução} \\ \hline
+A* Manhattan       & 420                       \\ \hline
+A* Octile          & 418.5                     \\ \hline
+Busca Gulosa         & 521                       \\ \hline
+Custo Uniforme       & 418.5                     \\ \hline
+IDS                & 418.5                     \\ \hline
+\end{tabular}
+\caption{Custo final da solução para cada algoritmo. Mapa ``map1.map'', estado inicial (0, 0) e objetivo (247, 245).}
+\label{tab:costs}
+\end{table}
+
+\subsection{Nodos expandidos}
+
+\begin{figure}[htp!]
+	\begin{center}
+	  \includegraphics[scale=0.35]{charts.png}
+	\end{center}
+	\caption{Gráficos de tempo de execução e nodos expandidos para os algoritmos de busca implementados.}
+	\label{fig:charts}
+\end{figure}
+
+A fim de verificar o comportamento dos algoritmos em relação ao número de nós que expandem e o seus tempos de execução, foi criado um novo mapa, composto apenas por células desbloqueadas. Dessa forma, dado um ponto no inicial no centro do mapa e um ponto objetivo próximo a ele, alterou-se a distância no eixo x entre esses pontos gradualmente, para gerar os gráficos vistos na Figura \ref{fig:charts}.
+
+Chamando a distância no eixo x entre os pontos iniciais e objetivos de $ \Delta x $, temos que, para $ \Delta x = \{10, 20, 30, 40, 50, 60, 70, 80, 90, 100\} $, os algoritmos A* (com ambas as heurísticas) e Busca Gulosa expandiram $ n = \Delta x $ nodos, sendo os mais eficientes em termos de espaço, dentre os algoritmos implementados.
+
+Já os algoritmos Busca de Custo Uniforme e IDS apresentaram um maior número de nodos expandidos, como visto no gráfico do canto inferior direito da Figura \ref{fig:charts}, em escala logarítmica.
+Esses resultados são esperados, uma vez que o algoritmo de busca uniforme, no mapa gerado, procura por todos os nodos à sua volta, e o algoritmo IDS faz o mesmo, porém ainda expande mais nodos, uma vez que faz uma busca em profundidade no grafo gerado.
+
+\subsection{Tempo de Execução} \label{sec:exptime}
+
+Os resultados de tempo de execução dos algoritmos são vistos nos gráficos dos cantos superior esquerdo, superior direito e inferior esquerdo da Figura \ref{fig:charts}. Vemos que os algoritmos A* e Busca gulosa, apresentam os menores tempo de execução, o que é uma consequência direta do número de nodos que expandem. Busca gulosa apresenta os menores tempos de execução uma vez que não executam nenhum tipo de cálculo complexo para determinar o próximo nodo a ser expandido.
+
+O algoritmo de busca uniforme executa em tempo praticamente linear, enquanto o algoritmo IDS é exponencial. Vemos que o tempo de execução desse último é o pior de todos, se tornando inviável na prática, para valores de $ \Delta x $ maiores que $ 60 $.
 
 \section{Considerações Finais}
 
 O Trabalho Prático I da disciplina de Inteligência Artificial se mostrou extremamente útil para fixar os conceitos vistos em sala referentes a problemas de busca no espaço de estados. Com ele, foi possível comparar os algoritmos utilizados e entender melhor as vantagens e desvantagens de cada um deles. Além disso, também foi possível visualizar o modo como cada um procura por caminhos no espaço de estados. De maneira geral, as maiores dificuldades durante a implementação do projeto foram o estudo teórico sobre heurísticas e suas propriedades, além da otimalidade do algoritmo A* (Seção \ref{sec:otima}). A implementação do algoritmo IDS também se mostrou mais complicada do que a dos outros algoritmos, uma vez que maiores modificações precisaram ser feitas à estrutura da busca em grafos, usada como classe mãe dos algoritmos.
+
+Também foi possível verificar em quais casos cada algoritmo é mais adequado. Se por um lado o algoritmo A* com heurística Manhattan não retorna sempre uma solução ótima com custos diagonais igual a $ 1.5 $. Entretanto, em mapas como o ``map2.map'', que possuem caminhos mais ou menos horizontais e verticais, ele pode ser mais adequado que o A* com heurística Octile (pois ganha em tempo de execução e tende a retornar soluções ótimas).
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}

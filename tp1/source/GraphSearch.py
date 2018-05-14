@@ -220,8 +220,7 @@ class GraphSearch():
 
 		if  self.problem_map.grid[self.initial] == '@' or \
 			self.problem_map.grid[self.goal] == '@':
-			solution = [Node(self.initial, None, None, 0),
-				Node(self.goal, None, None, float('inf'))]
+			solution = None
 
 			self.runtime = time.process_time() - self.runtime
 			return solution
@@ -277,8 +276,9 @@ class GraphSearch():
 		'''
 
 		if solution is None:
-			print(self.Node(self.initial, None, None, 0))
-			print(self.Node(self.goal, None, None, float('inf')))
+			print(Node(self.initial, None, None, 0))
+			print(Node(self.goal, None, None, float('inf')))
+			return
 
 		print(solution[0])
 		print(solution[-1])
