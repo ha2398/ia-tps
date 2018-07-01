@@ -9,6 +9,7 @@ tp2.py:
 
 from MDP import MDP
 import argparse
+import numpy as np
 
 
 parser = argparse.ArgumentParser()
@@ -16,8 +17,12 @@ parser.add_argument('map', type=str, help='Map of the world.')
 parser.add_argument('alpha', type=float, help='Learning rate.')
 parser.add_argument('gamma', type=float, help='Discount factor.')
 parser.add_argument('iter', type=int, help='Number of iterations.')
+parser.add_argument('-s', dest='SEED', default=0, type=int,
+	help='Seed for pseudo-number generator.')
 
 args = parser.parse_args()
+
+np.random.seed(args.SEED)
 
 STATES = ['-', '0', '&']
 ACTIONS = ['^', '<', '>', 'v']
@@ -29,7 +34,9 @@ def main():
         Main function.
     '''
 
-    pac_maze = MDP(STATES, ACTIONS, REWARDS, args.map)
+    pac_maze = MDP(STATES, ACTIONS, REWARDS, args.alpha, args.gamma, args.map,
+    	args.iter)
+    pac_maze.qlearning()
 
 
 main()

@@ -39,3 +39,34 @@ class Map():
         map_file.close()
 
         return
+
+    def get_height(self):
+        '''
+            Get map height.
+
+            @return: (float) Map height.
+        '''
+
+        return self.height
+
+    def get_width(self):
+        '''
+            Get map width.
+
+            @return: (float) Map width.
+        '''
+
+        return self.width
+
+    def get_position(self, x, y):
+        '''
+            Get position in a given coordinate.
+
+            @x: (int) X coordinate.
+            @y: (int) Y coordinate.
+
+            @return: (string) State of position with the given coordinate in
+                map.
+        '''
+
+        return self.grid[x, y]
