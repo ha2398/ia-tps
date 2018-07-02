@@ -6,11 +6,10 @@ Autor: Hugo Araujo de Sousa (2013007463)
 MDP.py: Markov Decision Problem class.
 '''
 
-
-from Map import Map
 import numpy as np
 import operator as op
 
+from Map import Map
 
 class MDP():
 
@@ -94,7 +93,8 @@ class MDP():
         '''
 
         x, y = state
-        return max(Q[x][y].items(), key=op.itemgetter(1))[0]
+
+        return max(sorted(Q[x][y].items()), key=op.itemgetter(1))[0]
 
     def select_action(self, Q, state):
         '''
@@ -172,7 +172,7 @@ class MDP():
         if position in self.TERMINALS:
             return self.rewards[position]
 
-        return max(Q[x][y].items(), key=op.itemgetter(1))[1]
+        return max(sorted(Q[x][y].items()), key=op.itemgetter(1))[1]
 
     def updateQ(self, Q, action, state, new_state_maxq):
         '''
@@ -205,13 +205,13 @@ class MDP():
         for x in range(height):
             for y in range(width):
                 # Q File
-                q_file.write('{},{},direita,{}\n'.format(x, y,
+                q_file.write('{},{},direita,{:.5f}\n'.format(x, y,
                     Q[x][y][self.RIGHT]))
-                q_file.write('{},{},esquerda,{}\n'.format(x, y,
+                q_file.write('{},{},esquerda,{:.5f}\n'.format(x, y,
                     Q[x][y][self.LEFT]))
-                q_file.write('{},{},acima,{}\n'.format(x, y,
+                q_file.write('{},{},acima,{:.5f}\n'.format(x, y,
                     Q[x][y][self.UP]))
-                q_file.write('{},{},abaixo,{}\n'.format(x, y,
+                q_file.write('{},{},abaixo,{:.5f}\n'.format(x, y,
                     Q[x][y][self.DOWN]))
 
                 # Pi file

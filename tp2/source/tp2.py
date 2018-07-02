@@ -7,10 +7,8 @@ tp2.py:
 '''
 
 
-from MDP import MDP
 import argparse
 import numpy as np
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('map', type=str, help='Map of the world.')
@@ -25,6 +23,8 @@ parser.add_argument('-s', dest='SEED', default=0, type=int,
 args = parser.parse_args()
 
 np.random.seed(args.SEED)
+
+from MDP import MDP
 
 STATES = ['-', '0', '&']
 ACTIONS = ['^', '<', '>', 'v']
