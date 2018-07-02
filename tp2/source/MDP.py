@@ -26,7 +26,8 @@ class MDP():
 
     TERMINALS = [TABLET, GHOST]
 
-    def __init__(self, S, A, R, alpha, gamma, map_filename, iterations):
+    def __init__(self, S, A, R, alpha, gamma, map_filename, iterations,
+        epsilon=None):
         '''
             Initialize the Markov Decision Problem instance.
 
@@ -39,6 +40,7 @@ class MDP():
             @map_filename: (string) Name of the file to read mapa data from.
             @iterations: (int) Number of iterations to run the Q-Learning
                 algorithm for.
+            @epsilon: (float) Epsilon for e-greedy policy.
         '''
 
         self.states = S
@@ -48,6 +50,7 @@ class MDP():
         self.gamma = gamma
         self.map = Map(map_filename)
         self.iterations = iterations
+        self.epsilon = epsilon
 
     def init_qmatrix(self):
         '''
@@ -80,21 +83,41 @@ class MDP():
 
         return x, y
 
-    def select_action(self, state):
+    def get_best_action(self, Q, state):
+        '''
+            Get the best action for current state.
+
+            @Q: ((dict {string: int} list) list) Q matrix.
+            @state: (int, int) Current state.
+
+            @return: (string) Optimal action  for current state.
+        '''
+
+        x, y = state
+        return max(Q[x][y].items(), key=op.itemgetter(1))[0]
+
+    def select_action(self, Q, state):
         '''
             Select a random action to perform.
+
+            @Q: ((dict {string: int} list) list) Q matrix.
+            @state: (int, int) Current state.
 
             @return: (string (int, int)) Action to perform and the state the
                 agent will get to, by performing it.
         '''
 
-        action = np.random.choice([action for action in self.actions])
-        possible, new_state = self.simulate_action(state, action)
-        while not possible:
-            action = np.random.choice([action for action in self.actions])
-            possible, new_state = self.simulate_action(state, action)
+        random_action = np.random.choice([action for action in self.actions])
 
-        return action, new_state
+        if self.epsilon is not None:
+            best_action = self.get_best_action(Q, state)
+            next_action = np.random.choice([random_action, best_action],
+                p=[self.epsilon, (1 - self.epsilon)])
+        else:
+            next_action = random_action
+
+        new_state = self.simulate_action(state, next_action)
+        return next_action, new_state
 
     def simulate_action(self, state, action):
         '''
@@ -103,9 +126,8 @@ class MDP():
             @state: (int, int) Current state.
             @action: (string) Action to simulate.
 
-            @return: (bool, (int, int)) True, iff, the action can be performed
-                and the state the agent would get to, by performing the given
-                action.
+            @return: (int, int) State the agent would get to, by performing the
+                given action.
         '''
 
         height, width = self.map.get_height(), self.map.get_width()
@@ -128,11 +150,11 @@ class MDP():
         new_position = self.map.get_position(new_x, new_y)
 
         if new_position == self.WALL:
-            return True, state
+            return state
         elif new_x < 0 or new_x > x_bound or new_y < 0 or new_y > y_bound:
-            return False, None
+            return state
         else:
-            return True, new_state
+            return new_state
 
     def get_maxq(self, Q, state):
         '''
@@ -196,7 +218,7 @@ class MDP():
                 position = self.map.get_position(x, y)
 
                 if position == self.FREE:
-                    position = max(Q[x][y].items(), key=op.itemgetter(1))[0]
+                    position = self.get_best_action(Q, (x, y))
 
                 pi_file.write(position)
 
@@ -221,7 +243,7 @@ class MDP():
 
             # While terminal state hasn't been reached.
             while self.map.get_position(*state) not in self.TERMINALS:
-                action, new_state = self.select_action(state)
+                action, new_state = self.select_action(Q, state)
                 # print(state, action, episode)
                 new_state_maxq = self.get_maxq(Q, new_state)
                 self.updateQ(Q, action, state, new_state_maxq)
