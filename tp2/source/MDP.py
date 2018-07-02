@@ -145,6 +145,11 @@ class MDP():
         '''
 
         x, y = state
+
+        position = self.map.get_position(x, y)
+        if position in self.TERMINALS:
+            return self.rewards[position]
+
         return max(Q[x][y].items(), key=op.itemgetter(1))[1]
 
     def updateQ(self, Q, action, state, new_state_maxq):
@@ -163,6 +168,43 @@ class MDP():
         Q[x][y][action] = cur_q + self.alpha * (state_r + \
             self.gamma*new_state_maxq - cur_q)
 
+    def print_results(self, Q):
+        '''
+            Print results.
+
+            @Q: ((dict {string: int} list) list) Q matrix.
+        '''
+
+        q_file = open('q.txt', 'w')
+        pi_file = open('pi.txt', 'w')
+        
+        height, width = self.map.get_height(), self.map.get_width()
+
+        for x in range(height):
+            for y in range(width):
+                # Q File
+                q_file.write('{},{},direita,{}\n'.format(x, y,
+                    Q[x][y][self.RIGHT]))
+                q_file.write('{},{},esquerda,{}\n'.format(x, y,
+                    Q[x][y][self.LEFT]))
+                q_file.write('{},{},acima,{}\n'.format(x, y,
+                    Q[x][y][self.UP]))
+                q_file.write('{},{},abaixo,{}\n'.format(x, y,
+                    Q[x][y][self.DOWN]))
+
+                # Pi file
+                position = self.map.get_position(x, y)
+
+                if position == self.FREE:
+                    position = max(Q[x][y].items(), key=op.itemgetter(1))[0]
+
+                pi_file.write(position)
+
+            pi_file.write('\n')
+
+        q_file.close()
+        pi_file.close()
+
     def qlearning(self):
         '''
             Run the Q-Learning algorithm for the MDP instance.
@@ -180,6 +222,7 @@ class MDP():
             # While terminal state hasn't been reached.
             while self.map.get_position(*state) not in self.TERMINALS:
                 action, new_state = self.select_action(state)
+                # print(state, action, episode)
                 new_state_maxq = self.get_maxq(Q, new_state)
                 self.updateQ(Q, action, state, new_state_maxq)
                 state = new_state
@@ -192,4 +235,4 @@ class MDP():
             if iteration == self.iterations:
                 break
 
-        print(Q)
+        self.print_results(Q)
