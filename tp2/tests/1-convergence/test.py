@@ -97,6 +97,6 @@ for m in sorted(data):
 	legend.append(m)
 	plt.plot(x_axis, list(map(lambda x: x/args.SEEDS, data[m])))
 
-plt.legend(legend, loc='upper left')
+plt.legend(legend, loc='center left')
 plt.tight_layout()
 plt.savefig('convergence.png')
