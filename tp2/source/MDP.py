@@ -26,7 +26,7 @@ class MDP():
     TERMINALS = [TABLET, GHOST]
 
     def __init__(self, S, A, R, alpha, gamma, map_filename, iterations,
-        epsilon=None):
+        epsilon, qsumf):
         '''
             Initialize the Markov Decision Problem instance.
 
@@ -40,6 +40,7 @@ class MDP():
             @iterations: (int) Number of iterations to run the Q-Learning
                 algorithm for.
             @epsilon: (float) Epsilon for e-greedy policy.
+            @qsumf: (str) Name of file to print QSum data to.
         '''
 
         self.states = S
@@ -50,6 +51,7 @@ class MDP():
         self.map = Map(map_filename)
         self.iterations = iterations
         self.epsilon = epsilon
+        self.qsumf = qsumf
 
     def init_qmatrix(self):
         '''
@@ -172,7 +174,7 @@ class MDP():
         if position in self.TERMINALS:
             return self.rewards[position]
 
-        return max(sorted(Q[x][y].items()), key=op.itemgetter(1))[1]
+        return max(Q[x][y].items(), key=op.itemgetter(1))[1]
 
     def updateQ(self, Q, action, state, new_state_maxq):
         '''
@@ -189,6 +191,69 @@ class MDP():
         state_r = self.rewards[self.map.get_position(*state)]
         Q[x][y][action] = cur_q + self.alpha * (state_r + \
             self.gamma*new_state_maxq - cur_q)
+
+    def get_qsum(self, Q):
+        '''
+            Get the sum of the max values for each entry in the Q matrix. This
+            is defined as a metric to assess convergende through episodes.
+
+            @Q: ((dict {string: int} list) list) Q matrix.
+
+            @return: (float) Sum of the max values for each entry in the Q
+            matrix.
+        '''
+
+        height, width = self.map.get_height(), self.map.get_width()
+
+        qsum = 0.
+        for line in range(height):
+            for row in range(width):
+                qsum += self.get_maxq(Q, (line, row))
+
+        return qsum
+
+    def qlearning(self):
+        '''
+            Run the Q-Learning algorithm for the MDP instance.
+        '''
+
+        if self.qsumf is not None:
+            qsum_file = open(self.qsumf, 'w')
+
+        height, width = self.map.get_height(), self.map.get_width()
+
+        Q = self.init_qmatrix()
+        episode = 0
+
+        iteration = 0
+        while True:
+            state = self.select_initial_state(height, width)
+
+            # While terminal state hasn't been reached.
+            while self.map.get_position(*state) not in self.TERMINALS:
+                action, new_state = self.select_action(Q, state)
+                new_state_maxq = self.get_maxq(Q, new_state)
+                self.updateQ(Q, action, state, new_state_maxq)
+                state = new_state
+
+                iteration += 1
+
+                if self.qsumf is not None:
+                    qsum_file.write('{}\t{}\n'.format(
+                        iteration, self.get_qsum(Q)))
+
+                if iteration == self.iterations:
+                    break
+
+            episode += 1
+
+            if iteration == self.iterations:
+                break
+
+        if self.qsumf is not None:
+            qsum_file.close()
+
+        self.print_results(Q)
 
     def print_results(self, Q):
         '''
@@ -226,35 +291,3 @@ class MDP():
 
         q_file.close()
         pi_file.close()
-
-    def qlearning(self):
-        '''
-            Run the Q-Learning algorithm for the MDP instance.
-        '''
-
-        height, width = self.map.get_height(), self.map.get_width()
-
-        Q = self.init_qmatrix()
-        episode = 0
-
-        iteration = 0
-        while True:
-            state = self.select_initial_state(height, width)
-
-            # While terminal state hasn't been reached.
-            while self.map.get_position(*state) not in self.TERMINALS:
-                action, new_state = self.select_action(Q, state)
-                # print(state, action, episode)
-                new_state_maxq = self.get_maxq(Q, new_state)
-                self.updateQ(Q, action, state, new_state_maxq)
-                state = new_state
-
-                iteration += 1
-                if iteration == self.iterations:
-                    break
-
-            episode += 1
-            if iteration == self.iterations:
-                break
-
-        self.print_results(Q)

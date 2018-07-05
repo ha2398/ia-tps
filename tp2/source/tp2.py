@@ -15,10 +15,12 @@ parser.add_argument('map', type=str, help='Map of the world.')
 parser.add_argument('alpha', type=float, help='Learning rate.')
 parser.add_argument('gamma', type=float, help='Discount factor.')
 parser.add_argument('iter', type=int, help='Number of iterations.')
-parser.add_argument('-e', dest='EPSILON', default=0, type=float,
+parser.add_argument('-e', dest='EPSILON', default=None, type=float,
 	help='Epsilon for e-greedy policy.')
 parser.add_argument('-s', dest='SEED', default=0, type=int,
 	help='Seed for pseudo-number generator.')
+parser.add_argument('-q', dest='QSUMF', default=None, type=str,
+    help='Turn on QSum data over time printing to specified file.')
 
 args = parser.parse_args()
 
@@ -37,7 +39,7 @@ def main():
     '''
 
     pac_maze = MDP(STATES, ACTIONS, REWARDS, args.alpha, args.gamma, args.map,
-    	args.iter, args.EPSILON)
+    	args.iter, args.EPSILON, args.QSUMF)
     pac_maze.qlearning()
 
 
