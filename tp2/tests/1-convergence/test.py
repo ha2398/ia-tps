@@ -93,7 +93,7 @@ for m in maps:
 x_axis = list(range(1, args.ITER+1))
 legend = []
 
-for m in data:
+for m in sorted(data):
 	legend.append(m)
 	plt.plot(x_axis, list(map(lambda x: x/args.SEEDS, data[m])))
 
