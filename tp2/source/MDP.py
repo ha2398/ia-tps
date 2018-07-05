@@ -11,6 +11,7 @@ import operator as op
 
 from Map import Map
 
+
 class MDP():
 
     WALL = '#'
@@ -26,7 +27,7 @@ class MDP():
     TERMINALS = [TABLET, GHOST]
 
     def __init__(self, S, A, R, alpha, gamma, map_filename, iterations,
-        epsilon, qsumf):
+                 epsilon, qsumf):
         '''
             Initialize the Markov Decision Problem instance.
 
@@ -64,8 +65,8 @@ class MDP():
         height, width = self.map.get_height(), self.map.get_width()
 
         return [[dict(zip([a for a in self.actions],
-            [0. for x in range(len(self.actions))])) for w in range(width)] \
-            for h in range(height)]
+                          [0. for x in range(len(self.actions))]))
+                 for w in range(width)] for h in range(height)]
 
     def select_initial_state(self, height, width):
         '''
@@ -77,10 +78,11 @@ class MDP():
             @return: (int, int) Initial state coordinates.
         '''
 
-        x, y = np.random.randint(0, height - 1), np.random.randint(0, width - 1)
+        x, y = np.random.randint(
+            0, height - 1), np.random.randint(0, width - 1)
         while self.map.get_position(x, y) != self.FREE:
-            x, y = np.random.randint(0, height - 1), np.random.randint(0,
-                width - 1)
+            x, y = np.random.randint(0, height - 1),
+            np.random.randint(0, width - 1)
 
         return x, y
 
@@ -114,7 +116,8 @@ class MDP():
         if self.epsilon is not None:
             best_action = self.get_best_action(Q, state)
             next_action = np.random.choice([random_action, best_action],
-                p=[self.epsilon, (1 - self.epsilon)])
+                                           p=[self.epsilon,
+                                           (1 - self.epsilon)])
         else:
             next_action = random_action
 
@@ -183,14 +186,15 @@ class MDP():
             @Q: ((dict {string: int} list) list) Q matrix.
             @action: (string) Action the agent is about to perform.
             @state: (int, int) Current state.
-            @new_state_maxq: (float) Maximum Q matrix value for the given state.
+            @new_state_maxq: (float) Maximum Q matrix value for the given
+                state.
         '''
 
         x, y = state
         cur_q = Q[x][y][action]
         state_r = self.rewards[self.map.get_position(*state)]
-        Q[x][y][action] = cur_q + self.alpha * (state_r + \
-            self.gamma*new_state_maxq - cur_q)
+        Q[x][y][action] = cur_q + self.alpha * \
+            (state_r + self.gamma * new_state_maxq - cur_q)
 
     def get_qsum(self, Q):
         '''
@@ -264,20 +268,20 @@ class MDP():
 
         q_file = open('q.txt', 'w')
         pi_file = open('pi.txt', 'w')
-        
+
         height, width = self.map.get_height(), self.map.get_width()
 
         for x in range(height):
             for y in range(width):
                 # Q File
-                q_file.write('{},{},direita,{:.5f}\n'.format(x, y,
-                    Q[x][y][self.RIGHT]))
-                q_file.write('{},{},esquerda,{:.5f}\n'.format(x, y,
-                    Q[x][y][self.LEFT]))
-                q_file.write('{},{},acima,{:.5f}\n'.format(x, y,
-                    Q[x][y][self.UP]))
-                q_file.write('{},{},abaixo,{:.5f}\n'.format(x, y,
-                    Q[x][y][self.DOWN]))
+                q_file.write('{},{},direita,{:.5f}' +
+                             '\n'.format(x, y, Q[x][y][self.RIGHT]))
+                q_file.write('{},{},esquerda,{:.5f}' +
+                             '\n'.format(x, y, Q[x][y][self.LEFT]))
+                q_file.write('{},{},acima,{:.5f}' +
+                             '\n'.format(x, y, Q[x][y][self.UP]))
+                q_file.write('{},{},abaixo,{:.5f}' +
+                             '\n'.format(x, y, Q[x][y][self.DOWN]))
 
                 # Pi file
                 position = self.map.get_position(x, y)
