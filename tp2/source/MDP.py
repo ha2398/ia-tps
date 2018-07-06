@@ -274,14 +274,14 @@ class MDP():
         for x in range(height):
             for y in range(width):
                 # Q File
-                q_file.write('{},{},direita,{:.5f}' +
-                             '\n'.format(x, y, Q[x][y][self.RIGHT]))
-                q_file.write('{},{},esquerda,{:.5f}' +
-                             '\n'.format(x, y, Q[x][y][self.LEFT]))
-                q_file.write('{},{},acima,{:.5f}' +
-                             '\n'.format(x, y, Q[x][y][self.UP]))
-                q_file.write('{},{},abaixo,{:.5f}' +
-                             '\n'.format(x, y, Q[x][y][self.DOWN]))
+                q_file.write(('{},{},direita,{}' +
+                             '\n').format(x, y, Q[x][y][self.RIGHT]))
+                q_file.write(('{},{},esquerda,{}' +
+                             '\n').format(x, y, Q[x][y][self.LEFT]))
+                q_file.write(('{},{},acima,{}' +
+                             '\n').format(x, y, Q[x][y][self.UP]))
+                q_file.write(('{},{},abaixo,{}' +
+                             '\n').format(x, y, Q[x][y][self.DOWN]))
 
                 # Pi file
                 position = self.map.get_position(x, y)
