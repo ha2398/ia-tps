@@ -81,8 +81,8 @@ class MDP():
         x, y = np.random.randint(
             0, height - 1), np.random.randint(0, width - 1)
         while self.map.get_position(x, y) != self.FREE:
-            x, y = np.random.randint(0, height - 1),
-            np.random.randint(0, width - 1)
+            x, y = np.random.randint(
+                0, height - 1), np.random.randint(0, width - 1)
 
         return x, y
 
